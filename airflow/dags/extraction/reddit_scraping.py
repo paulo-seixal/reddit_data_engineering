@@ -26,8 +26,7 @@ password = parser.get('REDDIT_APP', 'password')
 
 
 output_name = datetime.datetime.now().strftime("%Y%m%d")
-current_time = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-one_week_ago = datetime.datetime.now() - datetime.timedelta(days=7)
+
 
 
 FIELDS = ['id', 
@@ -62,7 +61,7 @@ def get_subreddit_posts(reddit_api_instance, subreddit, time_filter='week' ,limi
     Get the posts from a subreddit
     '''
     try:
-        subreddit = reddit_api_instance.subreddit(subreddit).top(limit=limit, time_filter=time_filter)
+        subreddit = reddit_api_instance.subreddit(subreddit).hot(limit=limit)
         # posts = subreddit.top(time_filter=time_filter ,limit=limit)
         return subreddit
     except Exception as e:
@@ -121,7 +120,7 @@ def load_df_to_csv(df, path):
 
 def main():
     reddit_instance = connect()
-    posts = get_subreddit_posts(reddit_instance, 'portugal', limit=100)
+    posts = get_subreddit_posts(reddit_instance, 'portugal', limit=20)
     df = get_posts_info_to_df(posts)
     df = transform_df(df)
     load_df_to_csv(df, datasets_path / f'{output_name}.csv')
