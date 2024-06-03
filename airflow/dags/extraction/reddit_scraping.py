@@ -9,10 +9,9 @@ import sys
 import datetime
 
 # Get the path of the script
-script_path = pathlib.Path(__file__).parent.parent.parent.parent.resolve()
+script_path = pathlib.Path(__file__).parent.resolve()
+datasets_path = pathlib.Path(__file__).parent.parent.resolve() / 'datasets'
 
-# Get datasets folder
-datasets_path = script_path / 'datasets'
 
 # Read the config file
 parser = configparser.ConfigParser()
@@ -27,6 +26,8 @@ password = parser.get('REDDIT_APP', 'password')
 
 
 output_name = datetime.datetime.now().strftime("%Y%m%d")
+current_time = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+one_week_ago = datetime.datetime.now() - datetime.timedelta(days=7)
 
 
 FIELDS = ['id', 
@@ -56,14 +57,14 @@ def connect():
     except ResponseException as e:
         print(f'Unable to connect to Reddit API: {e}')
 
-def get_subreddit_posts(reddit_api_instance, subreddit, time_filter='day' ,limit=None):
+def get_subreddit_posts(reddit_api_instance, subreddit, time_filter='week' ,limit=None):
     '''
     Get the posts from a subreddit
     '''
     try:
-        subreddit = reddit_api_instance.subreddit(subreddit)
-        posts = subreddit.top(time_filter=time_filter ,limit=limit)
-        return posts
+        subreddit = reddit_api_instance.subreddit(subreddit).top(limit=limit, time_filter=time_filter)
+        # posts = subreddit.top(time_filter=time_filter ,limit=limit)
+        return subreddit
     except Exception as e:
         print(f'Unable to get posts from subreddit: {e}')
 
@@ -120,7 +121,7 @@ def load_df_to_csv(df, path):
 
 def main():
     reddit_instance = connect()
-    posts = get_subreddit_posts(reddit_instance, 'portugal', limit=10)
+    posts = get_subreddit_posts(reddit_instance, 'portugal', limit=100)
     df = get_posts_info_to_df(posts)
     df = transform_df(df)
     load_df_to_csv(df, datasets_path / f'{output_name}.csv')

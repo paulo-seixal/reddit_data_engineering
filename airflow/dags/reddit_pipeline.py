@@ -1,8 +1,10 @@
 from os import remove
 from airflow import DAG
-from airflow.operators.bash_operator import BashOperator
+from airflow.operators.bash import BashOperator
 from airflow.utils.dates import days_ago
 from datetime import timedelta, datetime
+
+import pathlib
 
 """
 DAG to extract Reddit data, load into AWS S3, and copy to AWS Redshift
@@ -11,6 +13,9 @@ DAG to extract Reddit data, load into AWS S3, and copy to AWS Redshift
 # Output name of extracted file. This be passed to each
 # DAG task so they know which file to process
 output_name = datetime.now().strftime("%Y%m%d")
+extract_reddit_data = pathlib.Path(__file__).parent / "extraction" / "reddit_scraping.py"
+s3 = pathlib.Path(__file__).parent / "extraction" / "upload_to_bucket.py"
+redshift = pathlib.Path(__file__).parent / "extraction" / "bucket_to_redshift.py"
 
 # Run our DAG daily and ensures DAG run will kick off
 # once Airflow is started, as it will try to "catch up"
@@ -32,21 +37,21 @@ with DAG(
 
     extract_reddit_data = BashOperator(
         task_id="extract_reddit_data",
-        bash_command=f"python /opt/airflow/extraction/extract_reddit_etl.py {output_name}",
+        bash_command=f"python {extract_reddit_data}",
         dag=dag,
     )
     extract_reddit_data.doc_md = "Extract Reddit data and store as CSV"
 
     upload_to_s3 = BashOperator(
         task_id="upload_to_s3",
-        bash_command=f"python /opt/airflow/extraction/upload_aws_s3_etl.py {output_name}",
+        bash_command=f"python {s3}",
         dag=dag,
     )
     upload_to_s3.doc_md = "Upload Reddit CSV data to S3 bucket"
 
     copy_to_redshift = BashOperator(
         task_id="copy_to_redshift",
-        bash_command=f"python /opt/airflow/extraction/upload_aws_redshift_etl.py {output_name}",
+        bash_command=f"python {redshift}",
         dag=dag,
     )
     copy_to_redshift.doc_md = "Copy S3 CSV file to Redshift table"

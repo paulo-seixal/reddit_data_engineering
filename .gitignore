@@ -2,3 +2,10 @@ venv
 *.env
 *.ini
 terraform/variable.tf
+*/__pycache__/
+*.egg-info/
+*.egg
+*.log
+*.csv
+*.pyc
+*.ini

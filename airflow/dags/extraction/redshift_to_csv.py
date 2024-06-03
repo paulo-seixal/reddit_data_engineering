@@ -10,7 +10,7 @@ Download Redshift table to CSV file. Will be stored under /tmp folder.
 """
 
 # Parse configuration file
-script_path = pathlib.Path(__file__).parent.parent.parent.parent.resolve()
+script_path = pathlib.Path(__file__).parent.resolve()
 parser = configparser.ConfigParser()
 parser.read(f"{script_path}/config.ini")
 

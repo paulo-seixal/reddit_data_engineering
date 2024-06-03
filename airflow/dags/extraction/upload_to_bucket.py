@@ -11,17 +11,17 @@ This represents the file downloaded from Reddit, which will be in the /tmp folde
 
 # Load AWS credentials
 parser = configparser.ConfigParser()
-script_path = pathlib.Path(__file__).parent.parent.parent.parent.resolve()
+script_path = pathlib.Path(__file__).parent.resolve()
+datasets_path = pathlib.Path(__file__).parent.parent.resolve() / "datasets"
 parser.read(f"{script_path}/config.ini")
 BUCKET_NAME = parser.get("aws_config", "bucket_name")
 AWS_REGION = parser.get("aws_config", "aws_region")
 
 output_name = datetime.now().strftime("%Y%m%d")
 
-datasets_folder = pathlib.Path(__file__).parent.parent.resolve() / "datasets"
 
 # Name for our S3 file
-FILENAME = datasets_folder / f"{output_name}.csv"
+FILENAME = f"{output_name}.csv"
 KEY = output_name + ".csv"
 
 
@@ -61,7 +61,7 @@ def create_bucket_if_not_exists(conn):
 def upload_file_to_s3(conn):
     """Upload file to S3 Bucket"""
     conn.meta.client.upload_file(
-        Filename= FILENAME, Bucket=BUCKET_NAME, Key=KEY
+        Filename= datasets_path / FILENAME, Bucket=BUCKET_NAME, Key=KEY
     )
 
 

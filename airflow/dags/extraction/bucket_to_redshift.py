@@ -14,7 +14,7 @@ the record in Redshift will be updated to reflect any changes in that record, if
 """
 
 # Parse our configuration file
-script_path = pathlib.Path(__file__).parent.parent.parent.parent.resolve()
+script_path = pathlib.Path(__file__).parent.resolve()
 parser = configparser.ConfigParser()
 parser.read(f"{script_path}/config.ini")
 
@@ -30,6 +30,7 @@ ACCOUNT_ID = parser.get("aws_config", "account_id")
 TABLE_NAME = "reddit"
 
 output_name = datetime.now().strftime("%Y%m%d")
+# output_name = "20240601"
 
 
 # Our S3 file & role_string
@@ -141,8 +142,4 @@ def main():
 
 
 if __name__ == "__main__":
-    rs_conn = connect_to_redshift()
-    cur = rs_conn.cursor()
-    cur.execute('SELECT * FROM reddit;')
-    print(cur.fetchall())
-    cur.close()
+    main()
