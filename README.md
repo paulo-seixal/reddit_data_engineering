@@ -6,7 +6,7 @@ Project was developed as a way to provide a good opportunity to develop skills a
 
 ## Workflow
 
-<img src="[https://github.com/ABZ-Aaron/Reddit-API-Pipeline/blob/master/images/workflow.png](https://github.com/paulo-seixal/reddit_data_engineering/blob/main/images/workflow.png)" width=70% height=70%>
+<img src="https://github.com/paulo-seixal/reddit_data_engineering/blob/main/images/workflow.png" width=70% height=70%>
 
 1. Extract data using [Reddit API](https://www.reddit.com/dev/api/)
 2. Create AWS resources with [Terraform](https://www.terraform.io)
